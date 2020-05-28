@@ -6,6 +6,7 @@ import lombok.*;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -35,6 +36,7 @@ public class MemberApiController {
     static class MemberDto {
         private String name;
     }
+
 
     @PostMapping("/api/v2/members")
     public CreateMemberResponse saveMember(@RequestBody @Valid CreateMemberRequest request){
@@ -73,6 +75,7 @@ public class MemberApiController {
     @AllArgsConstructor
     @NoArgsConstructor
     static class CreateMemberRequest{
+        @NotEmpty
         private String name;
     }
 
