@@ -1,8 +1,19 @@
+buildscript {
+	ext {
+		querydslPluginVersion = '1.0.10'
+	}
+	dependencies {
+		classpath("gradle.plugin.com.ewerk.gradle.plugins:querydsl-plugin:${querydslPluginVersion}")
+	}
+}
+
 plugins {
 	id 'org.springframework.boot' version '2.2.6.RELEASE'
 	id 'io.spring.dependency-management' version '1.0.9.RELEASE'
 	id 'java'
 }
+
+apply plugin: "com.ewerk.gradle.plugins.querydsl"
 
 group = 'com.jpabook'
 version = '0.0.1-SNAPSHOT'
@@ -31,8 +42,34 @@ dependencies {
 	testImplementation('org.springframework.boot:spring-boot-starter-test') {
 		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
 	}
+	implementation 'com.querydsl:querydsl-jpa' // querydsl
+	implementation 'com.querydsl:querydsl-apt' // querydsl
 }
 
 test {
 	useJUnitPlatform()
+}
+
+def querydslSrcDir = 'src/main/generated' // QClass 생성 위치
+
+querydsl {
+	library = "com.querydsl:querydsl-apt"
+	jpa = true
+	querydslSourcesDir = querydslSrcDir
+}
+
+sourceSets {
+	main {
+		java {
+			srcDirs = ['src/main/java', querydslSrcDir]
+		}
+	}
+}
+
+compileQuerydsl{
+	options.annotationProcessorPath = configurations.querydsl
+}
+
+configurations {
+	querydsl.extendsFrom compileClasspath
 }
